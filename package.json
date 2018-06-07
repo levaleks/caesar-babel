@@ -1,0 +1,24 @@
+{
+  "name": "timeout-babel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "timeout.js",
+  "scripts": {
+    "test": "NODE_ENV=test || SET \"NODE_ENV=test\" && mocha --require babel-core/register ./test/**/*.test.js",
+    "predev": "rimraf dist .cache",
+    "dev": "parcel index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-runtime": "^6.26.0"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "mocha": "^5.2.0",
+    "parcel-bundler": "^1.8.1",
+    "rimraf": "^2.6.2"
+  }
+}
