@@ -8,5 +8,5 @@ input.addEventListener('input', onInputChanged);
 key.addEventListener('change', onInputChanged);
 
 function onInputChanged() {
-  console.log(input.value, key.value);
+  output.value = `"${input.value}" encoded with key ${key.value}`;
 }
