@@ -1,8 +1,8 @@
 {
-  "name": "timeout-babel",
+  "name": "caesar-babel",
   "version": "1.0.0",
   "description": "",
-  "main": "timeout.js",
+  "main": "app.js",
   "scripts": {
     "test": "NODE_ENV=test || SET \"NODE_ENV=test\" && mocha --require babel-core/register ./test/**/*.test.js",
     "predev": "rimraf dist .cache",
