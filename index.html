@@ -1,18 +1,69 @@
-<h1>Caesar Demo</h1>
-<style>
-  textarea { width: 400px; height: 150px; margin: 10px 0 }
-  select { width: 400px; padding: 2px }
-  form {width: 400px }
-</style>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+    }
 
-<form>
-  <textarea class="input"></textarea>
-  <select name="key" class="key">
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-  </select>
-  <textarea class="output" readonly></textarea>
-</form>
+    #app {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-<script src="app.js"></script>
+    .main {
+      display: flex;
+      flex-direction: column;
+
+      width: 400px;
+    }
+
+    .topic {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form__label {
+      margin-bottom: 15px;
+    }
+
+    .form__label:last-child {
+      margin-bottom: 0;
+    }
+
+    .form__label-name {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form__control {
+      display: block;
+      width: 100%;
+    }
+
+    .original-text, .result-text {
+      overflow-y: scroll;
+      height: 75px;
+      resize: none;
+    }
+  </style>
+  <title>Caesar Cipher</title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
