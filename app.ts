@@ -8,9 +8,9 @@ import CaesarCipher from './src/caesar';
  * @desc Render HTML.
  *
  * @param {string|Function} template
- * @param {Object} node
+ * @param {HTMLElement} node
  */
-const render = function (template, node) {
+const render: Function = (template: string|Function, node: HTMLElement) => {
   if (!node) {
     return;
   }
@@ -22,7 +22,7 @@ const render = function (template, node) {
  * App
  */
 
-const App = () => {
+const App: Function = (): string => {
   return `
     <div class="main">
       <h1 class="topic">Caesar Demo</h1>
@@ -85,17 +85,17 @@ let caesarCipher = new CaesarCipher(0);
  * Get elements.
  */
 
-const operation = document.querySelector('.operation');
-const shift = document.querySelector('.shift');
-const input = document.querySelector('.original-text');
-const output = document.querySelector('.result-text');
+const operation: HTMLInputElement = document.querySelector('.operation');
+const shift: HTMLInputElement = document.querySelector('.shift');
+const input: HTMLInputElement = document.querySelector('.original-text');
+const output: HTMLInputElement = document.querySelector('.result-text');
 
 /**
  * Handlers.
  */
 
-const onInputChange = () => {
-  let result = '';
+const onInputChange = (): void => {
+  let result: string = '';
 
   switch (operation.value) {
     case 'encode':
@@ -111,7 +111,7 @@ const onInputChange = () => {
   output.value = result;
 };
 
-const onShiftChange = () => {
+const onShiftChange = (): void => {
   caesarCipher = new CaesarCipher(Number(shift.value));
 
   onInputChange();

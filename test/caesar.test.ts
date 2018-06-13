@@ -1,5 +1,6 @@
-const { assert } = require('chai');
-import CaesarCipher from '../src/caesar.js';
+import { assert } from 'chai';
+import { describe, it, before } from 'mocha';
+import CaesarCipher from '../src/caesar';
 
 describe('Test the CaesarCipher class', function() {
   describe('Test constructor with shifts of invalid type', function() {
