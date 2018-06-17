@@ -6,11 +6,8 @@ import CaesarCipher from './src/caesar';
 
 /**
  * @desc Render HTML.
- *
- * @param {string|Function} template
- * @param {HTMLElement} node
  */
-const render: Function = (template: string|Function, node: HTMLElement) => {
+const render: Function = (template: string|Function, node: HTMLElement): void => {
   if (!node) {
     return;
   }
@@ -21,6 +18,17 @@ const render: Function = (template: string|Function, node: HTMLElement) => {
 /**
  * App
  */
+
+/**
+ * Set alphabet.
+ */
+
+const alphabets: { name: string, letters: string }[] = [
+  { name: 'English', letters: 'abcdefghijklmnopqrstuvwxyz', },
+  { name: 'Russian', letters: 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя', },
+];
+
+let currentAlphabet = alphabets[0];
 
 const App: Function = (): string => {
   return `
@@ -39,12 +47,33 @@ const App: Function = (): string => {
         </label>
         <!-- /Operation -->
         
+        <!-- Alphabet -->
+        <label class="form__label">
+          <span class="form__label-name">Alphabet</span>
+          
+          <select name="alphabet" class="form__control alphabet">
+             ${alphabets
+               .map((a) => `
+                 <option
+                   value="${a.letters}"
+                   ${a.name === currentAlphabet.name ? 'selected' : ''}
+                 >
+                   ${a.name}
+                 </option>`)
+               .join('')}  
+          </select>          
+        </label>
+        <!-- /Alphabet -->
+        
         <!-- Shift -->
         <label class="form__label">
           <span class="form__label-name">Shift</span>
           
           <select name="shift" class="form__control shift">
-            ${Array.from({length: 26}, (_, i) => `<option value="${i}">${i}</option>`).join('')}
+            ${Array.from(
+              {length: currentAlphabet.letters.length}, 
+                (_, i) => `<option value="${i}">${i}</option>`)
+            .join('')}
           </select>
         </label>   
         <!-- /Shift -->
@@ -76,19 +105,18 @@ render(App, document.querySelector('#app'));
 
 /**
  * @desc Init cipher.
- *
- * @type {CaesarCipher}
  */
-let caesarCipher = new CaesarCipher(0);
+let caesarCipher: CaesarCipher = new CaesarCipher(0);
 
 /**
  * Get elements.
  */
 
-const operation: HTMLInputElement = document.querySelector('.operation');
-const shift: HTMLInputElement = document.querySelector('.shift');
-const input: HTMLInputElement = document.querySelector('.original-text');
-const output: HTMLInputElement = document.querySelector('.result-text');
+const operationSelectElement: HTMLSelectElement = document.querySelector('.operation');
+const alphabetSelectElement: HTMLSelectElement = document.querySelector('.alphabet');
+const shiftSelectElement: HTMLSelectElement = document.querySelector('.shift');
+const textInputElement: HTMLInputElement = document.querySelector('.original-text');
+const textOutputElement: HTMLInputElement = document.querySelector('.result-text');
 
 /**
  * Handlers.
@@ -97,22 +125,32 @@ const output: HTMLInputElement = document.querySelector('.result-text');
 const onInputChange = (): void => {
   let result: string = '';
 
-  switch (operation.value) {
+  switch (operationSelectElement.value) {
     case 'encode':
-      result = caesarCipher.encode(input.value);
+      result = caesarCipher.encode(textInputElement.value);
       break;
     case 'decode':
-      result = caesarCipher.decode(input.value);
+      result = caesarCipher.decode(textInputElement.value);
       break;
     default:
       result = '';
   }
 
-  output.value = result;
+  textOutputElement.value = result;
 };
 
-const onShiftChange = (): void => {
-  caesarCipher = new CaesarCipher(Number(shift.value));
+const onSettingsChange = (): void => {
+  if (currentAlphabet.letters !== alphabetSelectElement.value) {
+    currentAlphabet = alphabets.find((alphabet_) => alphabet_.letters === alphabetSelectElement.value);
+
+    shiftSelectElement.options.length = 0;
+
+    for (let i = 0; i < currentAlphabet.letters.length; i++) {
+      shiftSelectElement.options.add(new Option(String(i), String(i), i === 0, i === 0));
+    }
+  }
+
+  caesarCipher = new CaesarCipher(Number(shiftSelectElement.value), alphabetSelectElement.value);
 
   onInputChange();
 };
@@ -121,6 +159,7 @@ const onShiftChange = (): void => {
  * Attach events.
  */
 
-operation.addEventListener('change', onInputChange, false);
-shift.addEventListener('change', onShiftChange, false);
-input.addEventListener('input', onInputChange, false);
+operationSelectElement.addEventListener('change', onInputChange, false);
+alphabetSelectElement.addEventListener('change', onSettingsChange, false);
+shiftSelectElement.addEventListener('change', onSettingsChange, false);
+textInputElement.addEventListener('input', onInputChange, false);
