@@ -61,7 +61,6 @@ export default class CaesarCipher {
    * @example
    * // returns 'BCD'
    * (new CaesarCipher(1)).encode('abc');
-   * @throws {TypeError}
    */
   encode(text: string): string {
     return this.convertText('encode', text);
@@ -73,7 +72,6 @@ export default class CaesarCipher {
    * @example
    * // returns 'ZAB'
    * (new CaesarCipher(1)).decode('abc');
-   * @throws {TypeError}
    */
   decode(text: string): string {
     return this.convertText('decode', text);
