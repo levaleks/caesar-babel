@@ -49,29 +49,6 @@ describe('Test the CaesarCipher class', function() {
     });
   });
 
-  /**
-   * Positive cases.
-   */
-
-  describe('Test constructor with valid types of arguments', function() {
-    it('should apply offset 0 and default (English) alphabet', function() {
-      const ENGLISH_ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
-
-      const caesarCipher = new CaesarCipher(0);
-
-      assert.strictEqual(caesarCipher._shift, 0);
-      assert.strictEqual(caesarCipher._alphabet, ENGLISH_ALPHABET);
-    });
-
-    it('should apply offset 16 and provided (Russian) alphabet', function() {
-      const RUSSIAN_ALPHABET = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
-
-      const caesarCipher = new CaesarCipher(0, RUSSIAN_ALPHABET);
-
-      assert.strictEqual(caesarCipher._shift, 0);
-      assert.strictEqual(caesarCipher._alphabet, RUSSIAN_ALPHABET);
-    });
-  });
 
   /*********************************************************************************************************************
    * Test methods
@@ -99,16 +76,12 @@ describe('Test the CaesarCipher class', function() {
 
         describe('Encode', function() {
           it('should throw TypeError', function() {
-            const caesarCipher = new CaesarCipher(0);
-
             assert.throws(() => caesarCipher.encode(type.value), TypeError);
           });
         });
 
         describe('Decode', function() {
           it('should throw TypeError', function() {
-            const caesarCipher = new CaesarCipher(0);
-
             assert.throws(() => caesarCipher.decode(type.value), TypeError);
           });
         });
