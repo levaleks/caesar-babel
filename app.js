@@ -22,6 +22,17 @@ const render = function (template, node) {
  * App
  */
 
+/**
+ * Set alphabet.
+ */
+
+const alphabets = [
+  { name: 'English', letters: 'abcdefghijklmnopqrstuvwxyz', },
+  { name: 'Russian', letters: 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя', },
+];
+
+let currentAlphabet = alphabets[0];
+
 const App = () => {
   return `
     <div class="main">
@@ -39,12 +50,30 @@ const App = () => {
         </label>
         <!-- /Operation -->
         
+        <!-- Alphabet -->
+        <label class="form__label">
+          <span class="form__label-name">Alphabet</span>
+          
+          <select name="alphabet" class="form__control alphabet">
+             ${alphabets
+               .map((a) => `
+                 <option
+                   value="${a.letters}"
+                   ${a.name === currentAlphabet.name ? 'selected' : ''}
+                 >
+                   ${a.name}
+                 </option>`)
+               .join('')}  
+          </select>          
+        </label>
+        <!-- /Alphabet -->
+        
         <!-- Shift -->
         <label class="form__label">
           <span class="form__label-name">Shift</span>
           
           <select name="shift" class="form__control shift">
-            ${Array.from({length: 26}, (_, i) => `<option value="${i}">${i}</option>`).join('')}
+            ${Array.from({length: currentAlphabet.letters.length}, (_, i) => `<option value="${i}">${i}</option>`).join('')}
           </select>
         </label>   
         <!-- /Shift -->
@@ -79,16 +108,17 @@ render(App, document.querySelector('#app'));
  *
  * @type {CaesarCipher}
  */
-let caesarCipher = new CaesarCipher(0);
+let caesarCipher = new CaesarCipher(0, currentAlphabet.letters);
 
 /**
  * Get elements.
  */
 
-const operation = document.querySelector('.operation');
-const shift = document.querySelector('.shift');
-const input = document.querySelector('.original-text');
-const output = document.querySelector('.result-text');
+const operationSelectElement = document.querySelector('.operation');
+const alphabetSelectElement = document.querySelector('.alphabet');
+const shiftSelectElement = document.querySelector('.shift');
+const textInputElement = document.querySelector('.original-text');
+const textOutputElement = document.querySelector('.result-text');
 
 /**
  * Handlers.
@@ -97,22 +127,32 @@ const output = document.querySelector('.result-text');
 const onInputChange = () => {
   let result = '';
 
-  switch (operation.value) {
+  switch (operationSelectElement.value) {
     case 'encode':
-      result = caesarCipher.encode(input.value);
+      result = caesarCipher.encode(textInputElement.value);
       break;
     case 'decode':
-      result = caesarCipher.decode(input.value);
+      result = caesarCipher.decode(textInputElement.value);
       break;
     default:
       result = '';
   }
 
-  output.value = result;
+  textOutputElement.value = result;
 };
 
-const onShiftChange = () => {
-  caesarCipher = new CaesarCipher(Number(shift.value));
+const onSettingsChange = () => {
+  if (currentAlphabet.letters !== alphabetSelectElement.value) {
+    currentAlphabet = alphabets.find((alphabet_) => alphabet_.letters === alphabetSelectElement.value);
+
+    shiftSelectElement.options.length = 0;
+
+    for (let i = 0; i < currentAlphabet.letters.length; i++) {
+      shiftSelectElement.options.add(new Option(i, i, i === 0, i === 0));
+    }
+  }
+
+  caesarCipher = new CaesarCipher(Number(shiftSelectElement.value), alphabetSelectElement.value);
 
   onInputChange();
 };
@@ -121,6 +161,7 @@ const onShiftChange = () => {
  * Attach events.
  */
 
-operation.addEventListener('change', onInputChange, false);
-shift.addEventListener('change', onShiftChange, false);
-input.addEventListener('input', onInputChange, false);
+operationSelectElement.addEventListener('change', onInputChange, false);
+alphabetSelectElement.addEventListener('change', onSettingsChange, false);
+shiftSelectElement.addEventListener('change', onSettingsChange, false);
+textInputElement.addEventListener('input', onInputChange, false);

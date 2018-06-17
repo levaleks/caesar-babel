@@ -1,18 +1,4 @@
 /**
- * @desc Store alphabet.
- *
- * @type {WeakMap<Object, any>}
- */
-const internalABC = new WeakMap();
-
-/**
- * @desc Store shift.
- *
- * @type {WeakMap<Object, any>}
- */
-const internalShift = new WeakMap();
-
-/**
  * @desc Variation of Caesar cipher.
  *
  * @see {@link https://en.wikipedia.org/wiki/Caesar_cipher}
@@ -22,94 +8,107 @@ export default class CaesarCipher {
    * @desc Class constructor.
    *
    * @param {number} shift
+   * @param {string} alphabet
    * @throws {TypeError}
    * @throws {RangeError}
    */
-  constructor(shift) {
+  constructor(shift, alphabet = 'abcdefghijklmnopqrstuvwxyz') {
     if (!Number.isInteger(shift)) {
-      throw new TypeError();
+      throw new TypeError('Shift must be an integer');
     }
 
     if (shift < 0) {
-      throw new RangeError();
+      throw new RangeError('Shift must be a positive integer');
     }
 
-    internalABC.set(this, 'abcdefghijklmnopqrstuvwxyz');
+    if (typeof alphabet !== 'string' || !alphabet.length) {
+      throw new TypeError('Alphabet must be a non-empty string');
+    }
 
-    internalShift.set(this, shift);
+    /**
+     * @type {number}
+     * @private
+     */
+    this._shift = shift;
+
+    /**
+     * @type {string}
+     * @private
+     */
+    this._alphabet = alphabet.trim();
+  }
+
+  /**
+   * @desc Encode or decode text. PAY ATTENTION to the return value - it will be always in upper case.
+   *
+   * @param {('encode'|'decode')} operation
+   * @param {string} text
+   * @returns {string}
+   * @private
+   */
+  _convertText(operation, text) {
+    if (!(['encode', 'decode'].includes(operation))) {
+      throw new TypeError('Invalid type of converting operation');
+    }
+
+    if (typeof text !== 'string') {
+      throw new TypeError('Text must be a string');
+    }
+
+    return text.replace(new RegExp(`[${this._alphabet}]`, 'gi'), (letter) => {
+      if (this._alphabet.includes(letter.toLowerCase())) {
+        const indexOfProvidedLetter = this._alphabet.indexOf(letter.toLowerCase());
+
+        let indexOfConvertedLetter;
+
+        if (operation === 'encode') {
+          indexOfConvertedLetter = (indexOfProvidedLetter + this._shift) % this._alphabet.length;
+        } else {
+          indexOfConvertedLetter = (indexOfProvidedLetter - this._shift + this._alphabet.length) % this._alphabet.length;
+        }
+
+        const convertedLetter = this._alphabet[indexOfConvertedLetter];
+
+        return convertedLetter.toUpperCase();
+      }
+
+      return letter;
+    });
   }
 
   /**
    * @desc Encode method.
    *
-   * @param {string} value
+   * @example
+   * // returns 'BCD'
+   * (new CaesarCipher(1)).encode('abc');
+   * @param {string} text
    * @throws {TypeError}
    * @returns {string}
    */
-  encode(value) {
-    if (typeof value !== 'string') {
+  encode(text) {
+    if (typeof text !== 'string') {
       throw new TypeError();
     }
 
-    const alphabet = internalABC.get(this);
-    const shift = internalShift.get(this);
-
-    let result = '';
-
-    const encodeLetter = (letter) => {
-      if (alphabet.includes(letter.toLowerCase())) {
-        const indexOfCurrentLetter = alphabet.indexOf(letter.toLowerCase());
-        const indexOfEncodedLetter = (indexOfCurrentLetter + shift) % alphabet.length;
-
-        const encodedLetter = alphabet[indexOfEncodedLetter];
-
-        return encodedLetter.toUpperCase();
-      }
-
-      return letter;
-    };
-
-    for (let letter of value) {
-      result = result.concat(encodeLetter(letter));
-    }
-
-    return result;
+    return this._convertText('encode', text);
   }
 
   /**
    * @desc Decode method.
    *
-   * @param {string} value
+   * @example
+   * // returns 'ZAB'
+   * (new CaesarCipher(1)).decode('abc');
+   * @param {string} text
    * @throws {TypeError}
    * @returns {string}
    */
-  decode(value) {
-    if (typeof value !== 'string') {
+  decode(text) {
+    if (typeof text !== 'string') {
       throw new TypeError();
     }
 
-    const alphabet = internalABC.get(this);
-    const shift = internalShift.get(this);
-
-    let result = '';
-
-    const decodeLetter = (letter) => {
-      if (alphabet.includes(letter.toLowerCase())) {
-        const indexOfCurrentLetter = alphabet.indexOf(letter.toLowerCase());
-        const indexOfDecodedLetter = (indexOfCurrentLetter - shift + alphabet.length) % alphabet.length;
-
-        const decodedLetter = alphabet[indexOfDecodedLetter];
-
-        return decodedLetter.toUpperCase();
-      }
-
-      return letter;
-    };
-
-    for (let letter of value) {
-      result = result.concat(decodeLetter(letter));
-    }
-
-    return result;
+    return this._convertText('decode', text);
   }
 }

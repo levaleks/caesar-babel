@@ -2,133 +2,125 @@ const { assert } = require('chai');
 import CaesarCipher from '../src/caesar.js';
 
 describe('Test the CaesarCipher class', function() {
-  describe('Test constructor with shifts of invalid type', function() {
-    it('should throw TypeError for decimal', function() {
-      assert.throws(() => new CaesarCipher(Number.MIN_VALUE), TypeError);
-    });
 
-    it('should throw TypeError for string', function() {
-      assert.throws(() => new CaesarCipher(''), TypeError);
-    });
+  /*********************************************************************************************************************
+   * Test constructor
+   ********************************************************************************************************************/
 
-    it('should throw TypeError for symbol', function() {
-      assert.throws(() => new CaesarCipher(Symbol('foo')), TypeError);
-    });
+  /**
+   * Negative cases.
+   */
 
-    it('should throw TypeError for boolean', function() {
-      assert.throws(() => new CaesarCipher(true), TypeError);
-    });
+  describe('Test constructor with invalid types of arguments', function() {
+    describe('Test "offset"', function() {
+      const invalidOffsetTypes = [
+        { name: 'decimal', value: Number.MIN_VALUE },
+        { name: 'string', value: '' },
+        { name: 'symbol', value: Symbol('foo') },
+        { name: 'boolean', value: true },
+        { name: 'object', value: {} },
+      ];
 
-    it('should throw TypeError for object', function() {
-      assert.throws(() => new CaesarCipher({}), TypeError);
-    });
-  });
-
-  describe('Test constructor with out-of-range shift', function() {
-    it('should throw RangeError for argument lower than 0', function() {
-      assert.throws(() => new CaesarCipher(-1), RangeError);
-    });
-  });
-
-  describe('Test methods with non-string values', function() {
-    describe('Test with number as an argument', function() {
-      let caesarCipher;
-
-      before(function () {
-        caesarCipher = new CaesarCipher(0);
-      });
-
-      describe('Encode', function() {
-        it('should throw TypeError', function() {
-          const caesarCipher = new CaesarCipher(0);
-
-          assert.throws(() => caesarCipher.encode(0), TypeError);
+      invalidOffsetTypes.forEach((type) => {
+        it(`should throw TypeError for ${type.name}`, function() {
+          assert.throws(() => new CaesarCipher(type.value), TypeError);
         });
       });
 
-      describe('Decode', function() {
-        it('should throw TypeError', function() {
-          const caesarCipher = new CaesarCipher(0);
-
-          assert.throws(() => caesarCipher.decode(0), TypeError);
-        });
+      it('should throw RangeError for offset lower than 0', function() {
+        assert.throws(() => new CaesarCipher(-1), RangeError);
       });
     });
 
-    describe('Test with boolean as an argument', function() {
-      let caesarCipher;
+    describe('Test "alphabet"', function() {
+      const invalidAlphabetTypes = [
+        { name: 'number', value: 0 },
+        { name: 'empty string', value: '' },
+        { name: 'symbol', value: Symbol('foo') },
+        { name: 'boolean', value: true },
+        { name: 'object', value: {} },
+      ];
 
-      before(function () {
-        caesarCipher = new CaesarCipher(0);
-      });
-
-      describe('Encode', function() {
-        it('should throw TypeError', function() {
-          const caesarCipher = new CaesarCipher(0);
-
-          assert.throws(() => caesarCipher.encode(true), TypeError);
-        });
-      });
-
-      describe('Decode', function() {
-        it('should throw TypeError', function() {
-          const caesarCipher = new CaesarCipher(0);
-
-          assert.throws(() => caesarCipher.decode(true), TypeError);
-        });
-      });
-    });
-
-    describe('Test with symbol as an argument', function() {
-      let caesarCipher;
-
-      before(function () {
-        caesarCipher = new CaesarCipher(0);
-      });
-
-      describe('Encode', function() {
-        it('should throw TypeError', function() {
-          const caesarCipher = new CaesarCipher(0);
-
-          assert.throws(() => caesarCipher.encode(Symbol('foo')), TypeError);
-        });
-      });
-
-      describe('Decode', function() {
-        it('should throw TypeError', function() {
-          const caesarCipher = new CaesarCipher(0);
-
-          assert.throws(() => caesarCipher.decode(Symbol('foo')), TypeError);
-        });
-      });
-    });
-
-    describe('Test with object as an argument', function() {
-      let caesarCipher;
-
-      before(function () {
-        caesarCipher = new CaesarCipher(0);
-      });
-
-      describe('Encode', function() {
-        it('should throw TypeError', function() {
-          const caesarCipher = new CaesarCipher(0);
-
-          assert.throws(() => caesarCipher.encode({}), TypeError);
-        });
-      });
-
-      describe('Decode', function() {
-        it('should throw TypeError', function() {
-          const caesarCipher = new CaesarCipher(0);
-
-          assert.throws(() => caesarCipher.decode({}), TypeError);
+      invalidAlphabetTypes.forEach((type) => {
+        it(`should throw TypeError for ${type.name}`, function() {
+          assert.throws(() => new CaesarCipher(0, type.value), TypeError);
         });
       });
     });
   });
 
-  describe('Test methods with in-range shifts', function() {
+  /**
+   * Positive cases.
+   */
+
+  describe('Test constructor with valid types of arguments', function() {
+    it('should apply offset 0 and default (English) alphabet', function() {
+      const ENGLISH_ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
+
+      const caesarCipher = new CaesarCipher(0);
+
+      assert.strictEqual(caesarCipher._shift, 0);
+      assert.strictEqual(caesarCipher._alphabet, ENGLISH_ALPHABET);
+    });
+
+    it('should apply offset 16 and provided (Russian) alphabet', function() {
+      const RUSSIAN_ALPHABET = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
+
+      const caesarCipher = new CaesarCipher(0, RUSSIAN_ALPHABET);
+
+      assert.strictEqual(caesarCipher._shift, 0);
+      assert.strictEqual(caesarCipher._alphabet, RUSSIAN_ALPHABET);
+    });
+  });
+
+  /*********************************************************************************************************************
+   * Test methods
+   ********************************************************************************************************************/
+
+  /**
+   * Negative cases.
+   */
+
+  describe('Test methods with invalid types of arguments', function() {
+    const invalidTypes = [
+      { name: 'number', value: 0 },
+      { name: 'symbol', value: Symbol('foo') },
+      { name: 'boolean', value: true },
+      { name: 'object', value: {} },
+    ];
+
+    invalidTypes.forEach((type) => {
+      describe(`Test with ${type.name} as an argument`, function() {
+        let caesarCipher;
+
+        before(function () {
+          caesarCipher = new CaesarCipher(0);
+        });
+
+        describe('Encode', function() {
+          it('should throw TypeError', function() {
+            const caesarCipher = new CaesarCipher(0);
+
+            assert.throws(() => caesarCipher.encode(type.value), TypeError);
+          });
+        });
+
+        describe('Decode', function() {
+          it('should throw TypeError', function() {
+            const caesarCipher = new CaesarCipher(0);
+
+            assert.throws(() => caesarCipher.decode(type.value), TypeError);
+          });
+        });
+      });
+    });
+  });
+
+  /**
+   * Positive cases.
+   */
+
+  describe('Test methods with valid types of arguments', function() {
     describe('Test with shift of 0', function() {
       let caesarCipher;
 
