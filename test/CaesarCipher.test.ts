@@ -1,19 +1,19 @@
 import { assert } from 'chai';
 import { describe, it, before } from 'mocha';
-import CaesarCipher from '../src/caesar';
+import CaesarCipher from '../src/CaesarCipher';
 
-describe('Test the CaesarCipher class', function() {
+describe('Test the CaesarCipher class', () => {
 
-  /*********************************************************************************************************************
+  /**
    * Test constructor
-   ********************************************************************************************************************/
+   */
 
   /**
    * Negative cases.
    */
 
-  describe('Test constructor with invalid types of arguments', function() {
-    describe('Test "offset"', function() {
+  describe('Test constructor with invalid types of arguments', () => {
+    describe('Test "offset"', () => {
       const invalidOffsetTypes: { name: string, value: any }[] = [
         { name: 'decimal', value: Number.MIN_VALUE },
         { name: 'string', value: '' },
@@ -23,17 +23,17 @@ describe('Test the CaesarCipher class', function() {
       ];
 
       invalidOffsetTypes.forEach((type) => {
-        it(`should throw TypeError for ${type.name}`, function() {
+        it(`should throw TypeError for ${type.name}`, () => {
           assert.throws(() => new CaesarCipher(type.value), TypeError);
         });
       });
 
-      it('should throw RangeError for offset lower than 0', function() {
+      it('should throw RangeError for offset lower than 0', () => {
         assert.throws(() => new CaesarCipher(-1), RangeError);
       });
     });
 
-    describe('Test "alphabet"', function() {
+    describe('Test "alphabet"', () => {
       const invalidAlphabetTypes: { name: string, value: any }[] = [
         { name: 'number', value: 0 },
         { name: 'empty string', value: '' },
@@ -43,22 +43,22 @@ describe('Test the CaesarCipher class', function() {
       ];
 
       invalidAlphabetTypes.forEach((type) => {
-        it(`should throw TypeError for ${type.name}`, function() {
+        it(`should throw TypeError for ${type.name}`, () => {
           assert.throws(() => new CaesarCipher(0, type.value), TypeError);
         });
       });
     });
   });
 
-  /*********************************************************************************************************************
+  /**
    * Test methods
-   ********************************************************************************************************************/
+   */
 
   /**
    * Negative cases.
    */
 
-  describe('Test methods with invalid types of arguments', function() {
+  describe('Test methods with invalid types of arguments', () => {
     const invalidTypes: { name: string, value: any }[] = [
       { name: 'number', value: 0 },
       { name: 'symbol', value: Symbol('foo') },
@@ -67,21 +67,21 @@ describe('Test the CaesarCipher class', function() {
     ];
 
     invalidTypes.forEach((type) => {
-      describe(`Test with ${type.name} as an argument`, function() {
+      describe(`Test with ${type.name} as an argument`, () => {
         let caesarCipher: CaesarCipher;
 
-        before(function () {
+        before(() => {
           caesarCipher = new CaesarCipher(0);
         });
 
-        describe('Encode', function() {
-          it('should throw TypeError', function() {
+        describe('Encode', () => {
+          it('should throw TypeError', () => {
             assert.throws(() => caesarCipher.encode(type.value), TypeError);
           });
         });
 
-        describe('Decode', function() {
-          it('should throw TypeError', function() {
+        describe('Decode', () => {
+          it('should throw TypeError', () => {
             assert.throws(() => caesarCipher.decode(type.value), TypeError);
           });
         });
@@ -93,62 +93,62 @@ describe('Test the CaesarCipher class', function() {
    * Positive cases.
    */
 
-  describe('Test methods with valid types of arguments', function() {
-    describe('Test with shift of 0', function() {
+  describe('Test methods with valid types of arguments', () => {
+    describe('Test with shift of 0', () => {
       let caesarCipher: CaesarCipher;
 
-      before(function () {
+      before(() => {
         caesarCipher = new CaesarCipher(0);
       });
 
-      describe('Encode', function() {
-        it('should encode with shift of 0', function() {
+      describe('Encode', () => {
+        it('should encode with shift of 0', () => {
           assert.strictEqual(caesarCipher.encode('abc'), 'ABC');
         });
       });
 
-      describe('Decode', function() {
-        it('should decode with shift of 1', function() {
+      describe('Decode', () => {
+        it('should decode with shift of 1', () => {
           assert.strictEqual(caesarCipher.decode('abc'), 'ABC');
         });
       });
     });
 
-    describe('Test with shift of 13', function() {
+    describe('Test with shift of 13', () => {
       let caesarCipher: CaesarCipher;
 
-      before(function () {
+      before(() => {
         caesarCipher = new CaesarCipher(13);
       });
 
-      describe('Encode', function() {
-        it('should encode with shift of 13', function() {
+      describe('Encode', () => {
+        it('should encode with shift of 13', () => {
           assert.strictEqual(caesarCipher.encode('abc'), 'NOP');
         });
       });
 
-      describe('Decode', function() {
-        it('should decode with shift of 13', function() {
+      describe('Decode', () => {
+        it('should decode with shift of 13', () => {
           assert.strictEqual(caesarCipher.decode('nop'), 'ABC');
         });
       });
     });
 
-    describe('Test with shift of 25', function() {
+    describe('Test with shift of 25', () => {
       let caesarCipher: CaesarCipher;
 
-      before(function () {
+      before(() => {
         caesarCipher = new CaesarCipher(25);
       });
 
-      describe('Encode', function() {
-        it('should encode with shift of 25', function() {
+      describe('Encode', () => {
+        it('should encode with shift of 25', () => {
           assert.strictEqual(caesarCipher.encode('abc'), 'ZAB');
         });
       });
 
-      describe('Decode', function() {
-        it('should decode with shift of 25', function() {
+      describe('Decode', () => {
+        it('should decode with shift of 25', () => {
           assert.strictEqual(caesarCipher.decode('zab'), 'ABC');
         });
       });

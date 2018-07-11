@@ -1,11 +1,12 @@
 {
-  "name": "caesar-typescript",
+  "name": "js-camp-3-caesar-tdd",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
-    "build": "parcel index.html",
-    "test": "ts-mocha ./test/**/*.test.ts"
+    "serve": "concurrently \"npm run lint\" \"parcel index.html\"",
+    "test": "concurrently \"ts-mocha --watch-extensions ts --watch ./test/**/*.test.ts\" \"npm run lint\"",
+    "lint": "nodemon -e ts --exec \"tslint --project . || exit 1\""
   },
   "keywords": [],
   "author": "",
@@ -13,9 +14,13 @@
   "dependencies": {},
   "devDependencies": {
     "chai": "^4.1.2",
+    "concurrently": "^3.6.0",
     "mocha": "^5.2.0",
+    "nodemon": "^1.17.5",
     "parcel-bundler": "^1.8.1",
     "ts-mocha": "^1.2.0",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.9.2",
     "typescript": "^2.9.1"
   }
 }

@@ -31,7 +31,8 @@ export default class CaesarCipher {
   }
 
   /**
-   * @desc Encode or decode text. PAY ATTENTION to the return value - it will be always in upper case.
+   * @desc Encode or decode text.
+   * PAY ATTENTION to the return value - it will be always in upper case.
    */
   private convertText(operation: 'encode'|'decode', text: string): string {
     return text.replace(new RegExp(`[${this.alphabet}]`, 'gi'), (letter) => {
@@ -43,7 +44,8 @@ export default class CaesarCipher {
         if (operation === 'encode') {
           indexOfConvertedLetter = (indexOfProvidedLetter + this.shift) % this.alphabet.length;
         } else {
-          indexOfConvertedLetter = (indexOfProvidedLetter - this.shift + this.alphabet.length) % this.alphabet.length;
+          indexOfConvertedLetter = (indexOfProvidedLetter - this.shift + this.alphabet.length)
+            % this.alphabet.length;
         }
 
         const convertedLetter: string = this.alphabet[indexOfConvertedLetter];

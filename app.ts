@@ -1,4 +1,4 @@
-import CaesarCipher from './src/caesar';
+import CaesarCipher from './src/CaesarCipher';
 
 /**
  * Helpers
@@ -24,75 +24,75 @@ const render: Function = (template: string|Function, node: HTMLElement): void =>
  */
 
 const alphabets: { name: string, letters: string }[] = [
-  { name: 'English', letters: 'abcdefghijklmnopqrstuvwxyz', },
-  { name: 'Russian', letters: 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя', },
+  { name: 'English', letters: 'abcdefghijklmnopqrstuvwxyz' },
+  { name: 'Russian', letters: 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя' },
 ];
 
 let currentAlphabet = alphabets[0];
 
-const App: Function = (): string => {
+const app: Function = (): string => {
   return `
     <div class="main">
       <h1 class="topic">Caesar Demo</h1>
-    
+
       <form class="form">
         <!-- Operation -->
         <label class="form__label">
           <span class="form__label-name">Operation</span>
-          
+
           <select name="operation" class="form__control operation">
             <option value="encode">Encode</option>
             <option value="decode">Decode</option>
           </select>
         </label>
         <!-- /Operation -->
-        
+
         <!-- Alphabet -->
         <label class="form__label">
           <span class="form__label-name">Alphabet</span>
-          
+
           <select name="alphabet" class="form__control alphabet">
-             ${alphabets
-               .map((a) => `
+         ${alphabets
+               .map(a => `
                  <option
                    value="${a.letters}"
                    ${a.name === currentAlphabet.name ? 'selected' : ''}
                  >
                    ${a.name}
                  </option>`)
-               .join('')}  
-          </select>          
+               .join('')}
+          </select>
         </label>
         <!-- /Alphabet -->
-        
+
         <!-- Shift -->
         <label class="form__label">
           <span class="form__label-name">Shift</span>
-          
+
           <select name="shift" class="form__control shift">
             ${Array.from(
-              {length: currentAlphabet.letters.length}, 
-                (_, i) => `<option value="${i}">${i}</option>`)
+              { length: currentAlphabet.letters.length },
+              (_, i) => `<option value="${i}">${i}</option>`)
             .join('')}
           </select>
-        </label>   
+        </label>
         <!-- /Shift -->
-        
+
         <!-- Original text -->
         <label class="form__label">
           <span class="form__label-name">Original text</span>
-          
+
           <textarea class="form__control original-text"></textarea>
         </label>
-        <!-- /Original text -->    
-        
+        <!-- /Original text -->
+
         <!-- Result text -->
         <label class="form__label">
           <span class="form__label-name">Result text</span>
-          
+
           <textarea class="form__control result-text"></textarea>
         </label>
-        <!-- /Result text -->              
+        <!-- /Result text -->
       </form>
     </div>
   `;
@@ -101,7 +101,7 @@ const App: Function = (): string => {
 /**
  * @desc Render App.
  */
-render(App, document.querySelector('#app'));
+render(app, document.querySelector('#app'));
 
 /**
  * @desc Init cipher.
@@ -141,10 +141,12 @@ const onInputChange = (): void => {
 
 const onSettingsChange = (): void => {
   if (currentAlphabet.letters !== alphabetSelectElement.value) {
-    currentAlphabet = alphabets.find((alphabet_) => alphabet_.letters === alphabetSelectElement.value);
+    currentAlphabet = alphabets
+      .find(alphabet => alphabet.letters === alphabetSelectElement.value);
 
     shiftSelectElement.options.length = 0;
 
+    // tslint:disable-next-line no-increment-decrement
     for (let i = 0; i < currentAlphabet.letters.length; i++) {
       shiftSelectElement.options.add(new Option(String(i), String(i), i === 0, i === 0));
     }
