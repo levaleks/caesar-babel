@@ -1,25 +1,26 @@
 {
-  "name": "caesar-babel",
+  "name": "js-camp-3-caesar-tdd",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_ENV=test || SET \"NODE_ENV=test\" && mocha --require babel-core/register ./test/**/*.test.js",
-    "predev": "rimraf dist .cache",
-    "dev": "parcel index.html"
+    "serve": "concurrently \"npm run lint\" \"parcel index.html\"",
+    "test": "concurrently \"ts-mocha --watch-extensions ts --watch ./test/**/*.test.ts\" \"npm run lint\"",
+    "lint": "nodemon -e ts --exec \"tslint --project . || exit 1\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "babel-runtime": "^6.26.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
     "chai": "^4.1.2",
+    "concurrently": "^3.6.0",
     "mocha": "^5.2.0",
+    "nodemon": "^1.17.5",
     "parcel-bundler": "^1.8.1",
-    "rimraf": "^2.6.2"
+    "ts-mocha": "^1.2.0",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.9.2",
+    "typescript": "^2.9.1"
   }
 }

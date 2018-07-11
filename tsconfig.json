@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "allowJs": true,
+    "target": "es2017"
+  },
+  "exclude": [
+    "node_modules",
+    ".cache",
+    "dist"
+  ]
+}
