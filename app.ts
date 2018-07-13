@@ -1,4 +1,4 @@
-import CaesarCipher from './src/CaesarCipher';
+import caesarCipher, { CipherOptions } from './src/caesarCipher';
 
 /**
  * Helpers
@@ -13,6 +13,24 @@ const render: Function = (template: string|Function, node: HTMLElement): void =>
   }
 
   node.innerHTML = typeof template === 'function' ? template() : template;
+};
+
+/**
+ * @desc Simple debounce function.
+ */
+const debounce: Function = (callback: Function, time: number = 250) => {
+  let timeoutId: number;
+
+  return (...args) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(
+      () => {
+        callback(...args);
+      },
+      time,
+    );
+  };
 };
 
 /**
@@ -40,7 +58,7 @@ const app: Function = (): string => {
         <label class="form__label">
           <span class="form__label-name">Operation</span>
 
-          <select name="operation" class="form__control operation">
+          <select name="operation" class="form__control js-operation">
             <option value="encode">Encode</option>
             <option value="decode">Decode</option>
           </select>
@@ -51,7 +69,7 @@ const app: Function = (): string => {
         <label class="form__label">
           <span class="form__label-name">Alphabet</span>
 
-          <select name="alphabet" class="form__control alphabet">
+          <select name="alphabet" class="form__control js-alphabet">
          ${alphabets
                .map(a => `
                  <option
@@ -69,7 +87,7 @@ const app: Function = (): string => {
         <label class="form__label">
           <span class="form__label-name">Shift</span>
 
-          <select name="shift" class="form__control shift">
+          <select name="shift" class="form__control js-shift">
             ${Array.from(
               { length: currentAlphabet.letters.length },
               (_, i) => `<option value="${i}">${i}</option>`)
@@ -82,7 +100,7 @@ const app: Function = (): string => {
         <label class="form__label">
           <span class="form__label-name">Original text</span>
 
-          <textarea class="form__control original-text"></textarea>
+          <textarea class="form__control js-original-text original-text"></textarea>
         </label>
         <!-- /Original text -->
 
@@ -90,10 +108,12 @@ const app: Function = (): string => {
         <label class="form__label">
           <span class="form__label-name">Result text</span>
 
-          <textarea class="form__control result-text"></textarea>
+          <textarea class="form__control js-result-text result-text" readonly></textarea>
         </label>
         <!-- /Result text -->
       </form>
+
+      <div class="js-indicator"></div>
     </div>
   `;
 };
@@ -106,37 +126,59 @@ render(app, document.querySelector('#app'));
 /**
  * @desc Init cipher.
  */
-let caesarCipher: CaesarCipher = new CaesarCipher(0);
+
+const cipherOptions: CipherOptions = {
+  operation: 'encode',
+  shift: 0,
+  text: '',
+};
 
 /**
  * Get elements.
  */
 
-const operationSelectElement: HTMLSelectElement = document.querySelector('.operation');
-const alphabetSelectElement: HTMLSelectElement = document.querySelector('.alphabet');
-const shiftSelectElement: HTMLSelectElement = document.querySelector('.shift');
-const textInputElement: HTMLInputElement = document.querySelector('.original-text');
-const textOutputElement: HTMLInputElement = document.querySelector('.result-text');
+const operationSelectElement: HTMLSelectElement = document.querySelector('.js-operation');
+const alphabetSelectElement: HTMLSelectElement = document.querySelector('.js-alphabet');
+const shiftSelectElement: HTMLSelectElement = document.querySelector('.js-shift');
+const textInputElement: HTMLInputElement = document.querySelector('.js-original-text');
+const textOutputElement: HTMLInputElement = document.querySelector('.js-result-text');
+const indicatorElement: HTMLElement = document.querySelector('.js-indicator');
+
+/**
+ * @desc Convert text and write result to the textarea.
+ * Simulate request to the remote server using setTimeout with 500ms delay.
+ */
+const convertText = debounce((options: CipherOptions): void => {
+  if (options.text) {
+    indicatorElement.classList.toggle('spinner');
+
+    setTimeout(() => {
+      textOutputElement.value = caesarCipher(options);
+
+      indicatorElement.classList.toggle('spinner');
+    },         500);
+  } else {
+    textOutputElement.value = '';
+  }
+});
 
 /**
  * Handlers.
  */
 
 const onInputChange = (): void => {
-  let result: string = '';
-
   switch (operationSelectElement.value) {
     case 'encode':
-      result = caesarCipher.encode(textInputElement.value);
+      cipherOptions.operation = 'encode';
       break;
     case 'decode':
-      result = caesarCipher.decode(textInputElement.value);
+      cipherOptions.operation = 'decode';
       break;
-    default:
-      result = '';
   }
 
-  textOutputElement.value = result;
+  cipherOptions.text = textInputElement.value;
+
+  convertText(cipherOptions);
 };
 
 const onSettingsChange = (): void => {
@@ -152,9 +194,10 @@ const onSettingsChange = (): void => {
     }
   }
 
-  caesarCipher = new CaesarCipher(Number(shiftSelectElement.value), alphabetSelectElement.value);
+  cipherOptions.shift = Number(shiftSelectElement.value);
+  cipherOptions.alphabet = alphabetSelectElement.value;
 
-  onInputChange();
+  convertText(cipherOptions);
 };
 
 /**
