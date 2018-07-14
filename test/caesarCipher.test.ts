@@ -1,6 +1,6 @@
 import { assert } from 'chai';
-import { describe, it, before } from 'mocha';
-import caesarCipher from '../src/caesarCipher';
+import { describe, it } from 'mocha';
+import caesarCipher, { CipherOperations } from '../src/caesarCipher';
 
 describe('Test the caesarCipher function', () => {
 
@@ -15,7 +15,7 @@ describe('Test the caesarCipher function', () => {
 
         assert.strictEqual(
           caesarCipher({
-            operation: 'encode',
+            operation: CipherOperations.Encode,
             alphabet: '',
             shift: 0,
             text: textValue,
@@ -38,7 +38,7 @@ describe('Test the caesarCipher function', () => {
         it(`should throw TypeError for ${type.name}`, () => {
           assert.throws(
             () => caesarCipher({
-              operation: 'encode',
+              operation: CipherOperations.Decode,
               shift: type.value,
               text: 'abc',
             }),
@@ -50,7 +50,7 @@ describe('Test the caesarCipher function', () => {
       it('should throw RangeError for offset lower than 0', () => {
         assert.throws(
           () => caesarCipher({
-            operation: 'encode',
+            operation: CipherOperations.Encode,
             shift: -1,
             text: 'abc',
           }),
@@ -68,13 +68,19 @@ describe('Test the caesarCipher function', () => {
     describe('Test with shift of 0', () => {
       describe('Encode', () => {
         it('should encode with shift of 0', () => {
-          assert.strictEqual(caesarCipher({ operation: 'encode', shift: 0, text: 'abc' }), 'ABC');
+          assert.strictEqual(
+            caesarCipher({ operation: CipherOperations.Encode, shift: 0, text: 'abc' }),
+            'ABC',
+          );
         });
       });
 
       describe('Decode', () => {
         it('should decode with shift of 0', () => {
-          assert.strictEqual(caesarCipher({ operation: 'decode', shift: 0, text: 'abc' }), 'ABC');
+          assert.strictEqual(
+            caesarCipher({ operation: CipherOperations.Decode, shift: 0, text: 'abc' }),
+            'ABC',
+          );
         });
       });
     });
@@ -82,13 +88,19 @@ describe('Test the caesarCipher function', () => {
     describe('Test with shift of 13', () => {
       describe('Encode', () => {
         it('should encode with shift of 13', () => {
-          assert.strictEqual(caesarCipher({ operation: 'encode', shift: 13, text: 'abc' }), 'NOP');
+          assert.strictEqual(
+            caesarCipher({ operation: CipherOperations.Encode, shift: 13, text: 'abc' }),
+            'NOP',
+          );
         });
       });
 
       describe('Decode', () => {
         it('should decode with shift of 13', () => {
-          assert.strictEqual(caesarCipher({ operation: 'decode', shift: 13, text: 'nop' }), 'ABC');
+          assert.strictEqual(
+            caesarCipher({ operation: CipherOperations.Decode, shift: 13, text: 'nop' }),
+            'ABC',
+          );
         });
       });
     });
@@ -96,13 +108,19 @@ describe('Test the caesarCipher function', () => {
     describe('Test with shift of 25', () => {
       describe('Encode', () => {
         it('should encode with shift of 25', () => {
-          assert.strictEqual(caesarCipher({ operation: 'encode', shift: 25, text: 'abc' }), 'ZAB');
+          assert.strictEqual(
+            caesarCipher({ operation: CipherOperations.Encode, shift: 25, text: 'abc' }),
+            'ZAB',
+          );
         });
       });
 
       describe('Decode', () => {
         it('should decode with shift of 25', () => {
-          assert.strictEqual(caesarCipher({ operation: 'decode', shift: 25, text: 'zab' }), 'ABC');
+          assert.strictEqual(
+            caesarCipher({ operation: CipherOperations.Decode, shift: 25, text: 'zab' }),
+            'ABC',
+          );
         });
       });
     });

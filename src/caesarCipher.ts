@@ -1,5 +1,10 @@
+export enum CipherOperations {
+  Encode = 'encode',
+  Decode = 'decode',
+}
+
 export interface CipherOptions {
-  operation: 'encode'|'decode';
+  operation: CipherOperations.Encode|CipherOperations.Decode;
   alphabet?: string;
   shift: number;
   text: string;
@@ -26,12 +31,26 @@ export default function caesarCipher(
     shift,
     text,
   }: CipherOptions): string {
+  if (operation !== CipherOperations.Encode && operation !== CipherOperations.Decode) {
+    throw new TypeError(
+      `Name of the operation must be "${CipherOperations.Encode}" or "${CipherOperations.Decode}"`,
+    );
+  }
+
+  if (typeof alphabet !== 'string') {
+    throw new TypeError('Alphabet must be a string');
+  }
+
   if (!Number.isInteger(shift)) {
     throw new TypeError('Shift must be an integer');
   }
 
   if (shift < 0) {
     throw new RangeError('Shift must be a positive integer');
+  }
+
+  if (typeof text !== 'string') {
+    throw new TypeError('Text must be a string');
   }
 
   if (alphabet.trim() === '' || text.trim() === '') {
@@ -44,7 +63,7 @@ export default function caesarCipher(
 
       let indexOfConvertedLetter: number;
 
-      if (operation === 'encode') {
+      if (operation === CipherOperations.Encode) {
         indexOfConvertedLetter = (indexOfProvidedLetter + shift) % alphabet.length;
       } else {
         indexOfConvertedLetter = (indexOfProvidedLetter - shift + alphabet.length)

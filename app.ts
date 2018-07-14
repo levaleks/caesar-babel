@@ -1,4 +1,4 @@
-import caesarCipher, { CipherOptions } from './src/caesarCipher';
+import caesarCipher, { CipherOperations, CipherOptions } from './src/caesarCipher';
 
 /**
  * Helpers
@@ -59,8 +59,8 @@ const app: Function = (): string => {
           <span class="form__label-name">Operation</span>
 
           <select name="operation" class="form__control js-operation">
-            <option value="encode">Encode</option>
-            <option value="decode">Decode</option>
+            <option value="${CipherOperations.Encode}">Encode</option>
+            <option value="${CipherOperations.Decode}">Decode</option>
           </select>
         </label>
         <!-- /Operation -->
@@ -128,7 +128,7 @@ render(app, document.querySelector('#app'));
  */
 
 const cipherOptions: CipherOptions = {
-  operation: 'encode',
+  operation: CipherOperations.Encode,
   shift: 0,
   text: '',
 };
@@ -150,12 +150,12 @@ const indicatorElement: HTMLElement = document.querySelector('.js-indicator');
  */
 const convertText = debounce((options: CipherOptions): void => {
   if (options.text) {
-    indicatorElement.classList.toggle('spinner');
+    indicatorElement.classList.add('spinner');
 
     setTimeout(() => {
       textOutputElement.value = caesarCipher(options);
 
-      indicatorElement.classList.toggle('spinner');
+      indicatorElement.classList.remove('spinner');
     },         500);
   } else {
     textOutputElement.value = '';
@@ -167,15 +167,7 @@ const convertText = debounce((options: CipherOptions): void => {
  */
 
 const onInputChange = (): void => {
-  switch (operationSelectElement.value) {
-    case 'encode':
-      cipherOptions.operation = 'encode';
-      break;
-    case 'decode':
-      cipherOptions.operation = 'decode';
-      break;
-  }
-
+  cipherOptions.operation = <CipherOperations>operationSelectElement.value;
   cipherOptions.text = textInputElement.value;
 
   convertText(cipherOptions);
